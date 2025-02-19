@@ -64,6 +64,8 @@ class XorCipher:
         key_cycle = (self.key * ((len(text) // len(self.key)) + 1))[:len(text)]
         return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(text, key_cycle))
 
+MONGO_PASSWORD = "rBo4xTwSNLs3hxnF"
+LINK = "mongodb+srv://<db_username>:<db_password>@cluster0.hfgzt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 if __name__ == "__main__":
     file_writer = FileWriter()
