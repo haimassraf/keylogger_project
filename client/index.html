@@ -6,16 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keylogger</title>
     <link href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/styles/ag-grid.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/styles/ag-theme-alpine.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/styles/ag-theme-alpine.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="container">
-        <h1 class="title">keylogger</h1>
-        <button id="toggleKeylogger" onclick="toggleKeylogger()">Start</button>
-        <div id="myGrid" class="ag-theme-alpine"></div>
-    </div>
+    <header>
+        <div class="recording-indicator">
+            <div class="dot"></div>
+            <span>Recording...</span>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <h1 class="title">keylogger</h1>
+            <button id="toggleKeylogger" onclick="toggleKeylogger()">Start</button>
+            <div id="myGrid" class="ag-theme-alpine"></div>
+        </div>
+    </main>
+    <footer>
+        <div>
+            <p class="footerP">This system is monitored. Unauthorized use is strictly prohibited</p>
+        </div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/dist/ag-grid-community.min.js"></script>
     <script src="main.js"></script>
 </body>
