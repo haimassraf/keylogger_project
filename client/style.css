@@ -93,7 +93,7 @@ button.stop {
 }
 
 #myGrid {
-    min-height: 300px; 
+    min-height: 300px;
     width: 100%;
     border: 1px solid #00ff00;
     border-radius: 8px;
@@ -140,6 +140,18 @@ button.stop {
     font-family: 'Courier New', monospace;
 }
 
+.recording-indicator span {
+    display: block;
+    font-size: 1.2rem;
+}
+
+#timer {
+    margin-top: 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+
 .recording-indicator .dot {
     width: 15px;
     height: 15px;
@@ -152,4 +164,3 @@ button.stop {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.2; }
 }
-

