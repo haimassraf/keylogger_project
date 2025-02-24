@@ -15,6 +15,7 @@ async function toggleKeylogger() {
             startTimer();
         } else {
             stopTimer();
+            window.location.reload();
         }
     } catch (error) {
         console.error('Error:', error);
@@ -60,15 +61,18 @@ async function fetchData() {
 
         const gridOptions = {
             columnDefs: [
-                { headerName: 'Window', field: 'window', filter: 'agTextColumnFilter' },
-                { headerName: 'Timestamp', field: 'timestamp', filter: 'agTextColumnFilter' },
-                { headerName: 'Logs', field: 'logs', filter: 'agTextColumnFilter' }
+                { headerName: "ID", valueGetter: (params) => params.node.rowIndex + 1, flex: 1 },
+                { headerName: 'Window', field: 'window', filter: 'agTextColumnFilter', flex: 2 },
+                { headerName: 'Timestamp', field: 'timestamp', filter: 'agTextColumnFilter', flex: 2 },
+                { headerName: 'Logs', field: 'logs', filter: 'agTextColumnFilter', flex: 4 }
             ],
             defaultColDef: {
                 sortable: true,
                 filter: true,
-                resizable: true
+                resizable: true,
+                headerClass: 'header-center'
             },
+
             rowData: rowData,
             pagination: true,
             paginationPageSize: 10,
@@ -95,6 +99,6 @@ function hexToString(hex) {
     return hex.match(/.{1,2}/g).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
 }
 
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     fetchData();
 });

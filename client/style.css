@@ -25,7 +25,6 @@ header {
 footer {
     width: 100%;
     padding: 10px;
-    position: fixed;
     margin: 0px;
     bottom: 0;
     left: 0;
@@ -33,15 +32,13 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
     color: black;
     font-family: 'Courier New', monospace;
 }
 
 .container {
     text-align: center;
-    width: 100%;
-    max-width: 600px;
+    width: 80%;
     margin: 70px auto;
     flex-grow: 1;
 }
@@ -85,7 +82,7 @@ button {
     cursor: pointer;
     border-radius: 8px;
     margin: 20px 0;
-    transition: background-color 0.3s;
+    transition: background-color 1s;
 }
 
 button.stop {
@@ -94,37 +91,44 @@ button.stop {
 
 #myGrid {
     min-height: 300px;
-    width: 100%;
     border: 1px solid #00ff00;
     border-radius: 8px;
     overflow: hidden;
 }
 
 .ag-theme-alpine {
-    --ag-background-color: #1a1a1a;
-    --ag-foreground-color: #00ff00;
-    --ag-border-color: #00ff00;
+    --ag-background-color: #1a1a1a !important;
+    --ag-foreground-color: #00ff00 !important;
+    --ag-border-color: #00ff00 !important;
 }
 
 .ag-row {
-    background-color: #0d0d0d;
-    color: #00ff00;
+    background-color: #0d0d0d !important;
+    color: #00ff00 !important;
 }
 
 .ag-row.ag-row-selected {
-    background-color: #006600;
+    background-color: #006600 !important;
 }
 
 .ag-header {
-    background-color: #003300;
-    color: #00ff00;
+    background-color: #003300 !important;
+    color: #00ff00 !important;
 }
 
 .ag-paging-panel,
 .ag-tool-panel-wrapper,
 .ag-filter {
-    background-color: #1a1a1a;
-    color: #00ff00;
+    background-color: #1a1a1a !important;
+    color: #00ff00 !important;
+}
+
+
+.header-center .ag-header-cell-label {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
 }
 
 .recording-indicator {
@@ -153,11 +157,8 @@ button.stop {
 
 
 .recording-indicator .dot {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background-color: #ff0000;
-    animation: blink 1s infinite;
+    width: 50px;
+    height: 50px;
 }
 
 @keyframes blink {
