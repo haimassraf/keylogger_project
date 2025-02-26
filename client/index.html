@@ -4,60 +4,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keylogger</title>
+    <title>Keylogger | Advanced Monitoring System</title>
     <link href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/styles/ag-grid.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/styles/ag-theme-alpine.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="matrix-bg" id="matrixCanvas"></div>
+    
     <header>
-        <h1 class="title">keylogger</h1>
-        <p class="subtitle">ADVANCED KEYSTROKE MONITORING SYSTEM</p>
+        <div class="logo-container">
+            <i class="fas fa-eye surveillance-icon"></i>
+        </div>
+        <div class="title-container">
+            <h1 class="title">KEYLOGGER</h1>
+            <p class="subtitle">ADVANCED KEYSTROKE MONITORING SYSTEM v2.5</p>
+        </div>
+        <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span class="status-text">ACTIVE</span>
+        </div>
     </header>
+    
     <main>
         <div class="controls">
-            <div class="users">
-                <h2 id="user"></h2>
+            <div class="users-section">
+                <h3 class="section-title"><i class="fas fa-users"></i> TARGET SELECTION</h3>
+                <h2 id="user" class="current-user">Initializing...</h2>
                 <select id="userSelect">
                     <option value="">Select User</option>
                 </select>
             </div>
-            <div>
-                <textarea id="chooseLog" readonly></textarea>
+            
+            <div class="log-section">
+                <h3 class="section-title"><i class="fas fa-stream"></i> LIVE FEED</h3>
+                <textarea id="chooseLog" readonly placeholder="Waiting for keystrokes..."></textarea>
             </div>
-            <div class="reload">
-                <button onclick="reload()">Reload <i class="fa-solid fa-rotate"></i></button>
+            
+            <div class="action-section">
+                <button class="reload-btn" onclick="reload()">
+                    <span class="btn-text">REFRESH DATA</span>
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+                <button class="export-btn" onclick="exportData()">
+                    <span class="btn-text">EXPORT</span>
+                    <i class="fas fa-file-export"></i>
+                </button>
             </div>
         </div>
-        <div class="container">
-            <div id="myGrid" class="ag-theme-alpine"></div>
+        
+        <div class="data-section">
+            <h3 class="section-title"><i class="fas fa-table"></i> KEYSTROKE DATABASE</h3>
+            <div class="container">
+                <div id="myGrid" class="ag-theme-alpine"></div>
+            </div>
         </div>
+        
         <div class="stats-container">
             <div class="stat-card">
                 <i class="fas fa-keyboard"></i>
                 <div class="stat-value" id="keystrokeCount">0</div>
-                <div class="stat-label">Keystrokes</div>
+                <div class="stat-label">TOTAL KEYSTROKES</div>
             </div>
+            
             <div class="stat-card">
                 <i class="fas fa-user-secret"></i>
                 <div class="stat-value" id="activeUsers">0</div>
-                <div class="stat-label">Active Users</div>
+                <div class="stat-label">ACTIVE USERS</div>
             </div>
+            
             <div class="stat-card">
                 <i class="fas fa-clock"></i>
                 <div class="stat-value" id="sessionTime">0m</div>
-                <div class="stat-label">Session Time</div>
+                <div class="stat-label">SESSION TIME</div>
             </div>
         </div>
     </main>
+    
     <footer>
-        <div>
-            <p class="footerP">This system is monitored. Unauthorized use is strictly prohibited</p>
+        <div class="footer-content">
+            <div class="security-badge">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <p class="footer-text">SYSTEM MONITORED | UNAUTHORIZED ACCESS PROHIBITED | <span id="current-date"></span></p>
         </div>
     </footer>
+    
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/dist/ag-grid-community.min.js"></script>
     <script src="main.js"></script>
 </body>
