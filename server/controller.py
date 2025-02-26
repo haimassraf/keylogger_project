@@ -15,22 +15,24 @@ def get_data():
 def add_data():
     try:
         data = request.json
-        for window, timestamps in data.items():
-            existing_entry = data_collection.find_one({"window": window})
-            if existing_entry:
-                for timestamp, value in timestamps.items():
-                    new_value = existing_entry["timestamps"].get(timestamp, "") + value
-                    data_collection.update_one(
-                        {"window": window},
-                        {"$set": {f"timestamps.{timestamp}": new_value}}
-                    )
-            else:
-                data_collection.insert_one({
-                    "window": window,
-                    "timestamps": timestamps
-                })
+        for user, windows in data.items():
+            for window, timestamps in windows.items():
+                existing_entry = data_collection.find_one({"user": user, "window": window})
+                if existing_entry:
+                    for timestamp, value in timestamps.items():
+                        new_value = existing_entry["timestamps"].get(timestamp, "") + value
+                        data_collection.update_one(
+                            {"user": user, "window": window},
+                            {"$set": {f"timestamps.{timestamp}": new_value}}
+                        )
+                else:
+                    data_collection.insert_one({
+                        "user": user,
+                        "window": window,
+                        "timestamps": timestamps
+                    })
 
-        updated_data = data_collection.find_one({"window": window}, {"_id": 0})
+        updated_data = data_collection.find_one({"user": user, "window": window}, {"_id": 0})
         return jsonify({"message": "Data updated successfully!", "Updated data": updated_data}), 201
 
     except Exception as err:

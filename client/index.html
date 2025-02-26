@@ -22,7 +22,13 @@
     <main>
         <div class="container">
             <h1 class="title">keylogger</h1>
-            <h2>user all data:</h2>
+            <div class="users">
+                <h3>Select a user to view the data.<i class="fa-solid fa-user" style="color: #00ff00;"></i></h3>
+                <select id="userSelect">
+                    <option value="">Select User</option>
+                </select>
+            </div>
+            <h2 id="user">All data:</h2>
             <!-- <button id="toggleKeylogger" onclick="toggleKeylogger()">Start</button> -->
             <div id="myGrid" class="ag-theme-alpine"></div>
         </div>

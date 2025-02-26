@@ -17,9 +17,30 @@ header {
     left: 0;
     background-color: #0d0d0d;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     z-index: 10;
+}
+
+.users {
+   text-align: left;
+}
+
+.users h3 {
+    margin: 2px;
+    padding: 5px;
+    font-size: 1rem;
+    color: #00ff00;
+}
+
+#userSelect {
+    background-color: #0d0d0d;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: 'Courier New', monospace;
 }
 
 footer {
@@ -39,10 +60,9 @@ footer {
 .container {
     text-align: center;
     width: 80%;
-    margin: 70px auto;
+    margin: 100px auto;
     flex-grow: 1;
 }
-
 
 .title {
     font-size: 3rem;
@@ -52,24 +72,11 @@ footer {
 }
 
 @keyframes glitch {
-    0% {
-        text-shadow: 2px 0 red, -2px 0 blue;
-    }
-    25% {
-        text-shadow: -2px 0 red, 2px 0 blue;
-    }
-
-    50% {
-        text-shadow: 2px 0 blue, -2px 0 red;
-    }
-
-    75% {
-        text-shadow: -2px 0 blue, 2px 0 red;
-    }
-
-    100% {
-        text-shadow: 2px 0 red, -2px 0 blue;
-    }
+    0% { text-shadow: 2px 0 red, -2px 0 blue; }
+    25% { text-shadow: -2px 0 red, 2px 0 blue; }
+    50% { text-shadow: 2px 0 blue, -2px 0 red; }
+    75% { text-shadow: -2px 0 blue, 2px 0 red; }
+    100% { text-shadow: 2px 0 red, -2px 0 blue; }
 }
 
 button {
@@ -154,7 +161,6 @@ button.stop {
     font-size: 1.2rem;
     font-weight: bold;
 }
-
 
 .recording-indicator .dot {
     width: 50px;

@@ -46,18 +46,37 @@
 //     return number < 10 ? '0' + number : number;
 // }
 
+
+let gridApi;
+
 async function fetchData() {
     try {
         const response = await fetch('http://127.0.0.1:5000/data');
         const data = await response.json();
 
-        const rowData = data.flatMap(entry =>
-            Object.entries(entry.timestamps).map(([timestamp, value]) => ({
-                window: entry.window,
-                timestamp: timestamp,
-                logs: xorDecrypt(value)
-            }))
-        );
+        const users = [...new Set(data.map(entry => entry.user))];
+
+        const userSelect = document.querySelector('#userSelect');
+        userSelect.innerHTML = '<option value="">Select User</option>' + 
+            users.map(user => `<option value="${user}">${user}</option>`).join('');
+
+        function updateGrid(selectedUser) {
+            document.querySelector('#user').innerHTML = selectedUser + " All data:" || 'All Users';
+            const filteredData = selectedUser ? 
+                data.filter(entry => entry.user === selectedUser) : data;
+
+            const rowData = filteredData.flatMap(entry =>
+                Object.entries(entry.timestamps).map(([timestamp, value]) => ({
+                    window: entry.window,
+                    timestamp: timestamp,
+                    logs: xorDecrypt(value)
+                }))
+            );
+
+            if (gridApi) {
+                gridApi.setGridOption("rowData", rowData);
+            }
+        }
 
         const gridOptions = {
             columnDefs: [
@@ -72,20 +91,26 @@ async function fetchData() {
                 resizable: true,
                 headerClass: 'header-center'
             },
-
-            rowData: rowData,
+            rowData: [],
             pagination: true,
             paginationPageSize: 10,
             paginationPageSizeSelector: [10, 20, 50, 100],
-            domLayout: 'autoHeight'
+            domLayout: 'autoHeight',
+            onGridReady: (params) => {
+                gridApi = params.api;
+                updateGrid(userSelect.value);
+            }
         };
 
         const eGridDiv = document.querySelector('#myGrid');
-        agGrid.createGrid(eGridDiv, gridOptions);
+        gridApi = agGrid.createGrid(eGridDiv, gridOptions);
+
+        userSelect.addEventListener('change', (event) => updateGrid(event.target.value));
     } catch (error) {
         console.error('Error fetching data:', error);
     }
 }
+
 
 function xorDecrypt(hexText, key = "thisIsMyXorKey") {
     const text = hexToString(hexText);

