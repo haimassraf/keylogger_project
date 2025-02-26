@@ -1,50 +1,50 @@
-let isRunning = false;
+// let isRunning = false;
 
-async function toggleKeylogger() {
-    const url = isRunning ? 'http://127.0.0.1:5000/stop_keylogger' : 'http://127.0.0.1:5000/start_keylogger';
-    try {
-        const response = await fetch(url);
-        const result = await response.json();
-        isRunning = !isRunning;
-        const button = document.getElementById('toggleKeylogger');
-        button.textContent = isRunning ? 'Stop' : 'Start';
-        button.classList.toggle('stop', isRunning);
-        const recordingIndicator = document.querySelector('.recording-indicator');
-        recordingIndicator.style.display = isRunning ? 'flex' : 'none';
-        if (isRunning) {
-            startTimer();
-        } else {
-            stopTimer();
-            window.location.reload();
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to toggle keylogger');
-    }
-}
+// async function toggleKeylogger() {
+//     const url = isRunning ? 'http://127.0.0.1:5000/stop_keylogger' : 'http://127.0.0.1:5000/start_keylogger';
+//     try {
+//         const response = await fetch(url);
+//         const result = await response.json();
+//         isRunning = !isRunning;
+//         const button = document.getElementById('toggleKeylogger');
+//         button.textContent = isRunning ? 'Stop' : 'Start';
+//         button.classList.toggle('stop', isRunning);
+//         const recordingIndicator = document.querySelector('.recording-indicator');
+//         recordingIndicator.style.display = isRunning ? 'flex' : 'none';
+//         if (isRunning) {
+//             startTimer();
+//         } else {
+//             stopTimer();
+//             window.location.reload();
+//         }
+//     } catch (error) {
+//         console.error('Error:', error);
+//         alert('Failed to toggle keylogger');
+//     }
+// }
 
-function startTimer() {
-    const timerElement = document.getElementById('timer');
-    timerElement.textContent = '00:00';
-    timerElement.style.display = 'inline';
-    seconds = 0;
-    timerInterval = setInterval(() => {
-        seconds++;
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        timerElement.textContent = `${pad(minutes)}:${pad(remainingSeconds)}`;
-    }, 1000);
-}
+// function startTimer() {
+//     const timerElement = document.getElementById('timer');
+//     timerElement.textContent = '00:00';
+//     timerElement.style.display = 'inline';
+//     seconds = 0;
+//     timerInterval = setInterval(() => {
+//         seconds++;
+//         const minutes = Math.floor(seconds / 60);
+//         const remainingSeconds = seconds % 60;
+//         timerElement.textContent = `${pad(minutes)}:${pad(remainingSeconds)}`;
+//     }, 1000);
+// }
 
-function stopTimer() {
-    clearInterval(timerInterval);
-    const timerElement = document.getElementById('timer');
-    timerElement.style.display = 'none';
-}
+// function stopTimer() {
+//     clearInterval(timerInterval);
+//     const timerElement = document.getElementById('timer');
+//     timerElement.style.display = 'none';
+// }
 
-function pad(number) {
-    return number < 10 ? '0' + number : number;
-}
+// function pad(number) {
+//     return number < 10 ? '0' + number : number;
+// }
 
 async function fetchData() {
     try {
@@ -64,7 +64,7 @@ async function fetchData() {
                 { headerName: "ID", valueGetter: (params) => params.node.rowIndex + 1, flex: 1 },
                 { headerName: 'Window', field: 'window', filter: 'agTextColumnFilter', flex: 2 },
                 { headerName: 'Timestamp', field: 'timestamp', filter: 'agTextColumnFilter', flex: 2 },
-                { headerName: 'Logs', field: 'logs', filter: 'agTextColumnFilter', flex: 4 }
+                { headerName: 'Logs', field: 'logs', filter: 'agTextColumnFilter', flex: 8 }
             ],
             defaultColDef: {
                 sortable: true,

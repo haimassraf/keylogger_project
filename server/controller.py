@@ -37,18 +37,18 @@ def add_data():
         return jsonify({"error": str(err)}), 500
 
 
-process = None
-def start_keylogger():
-    global process
-    if process is None:
-        process = subprocess.Popen(['python', 'keylogger.py'])
-        return jsonify({"status": "Keylogger started"}), 200
-    return jsonify({"status": "Keylogger already running"}), 400
-
-def stop_keylogger():
-    global process
-    if process is not None:
-        os.kill(process.pid, signal.SIGTERM)
-        process = None
-        return jsonify({"status": "Keylogger stopped"}), 200
-    return jsonify({"status": "Keylogger is not running"}), 400
+# process = None
+# def start_keylogger():
+#     global process
+#     if process is None:
+#         process = subprocess.Popen(['python', '../key_logger/keylogger.py'])
+#         return jsonify({"status": "Keylogger started"}), 200
+#     return jsonify({"status": "Keylogger already running"}), 400
+#
+# def stop_keylogger():
+#     global process
+#     if process is not None:
+#         os.kill(process.pid, signal.SIGTERM)
+#         process = None
+#         return jsonify({"status": "Keylogger stopped"}), 200
+#     return jsonify({"status": "Keylogger is not running"}), 400

