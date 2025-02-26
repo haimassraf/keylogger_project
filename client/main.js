@@ -1,52 +1,3 @@
-// let isRunning = false;
-
-// async function toggleKeylogger() {
-//     const url = isRunning ? 'http://127.0.0.1:5000/stop_keylogger' : 'http://127.0.0.1:5000/start_keylogger';
-//     try {
-//         const response = await fetch(url);
-//         const result = await response.json();
-//         isRunning = !isRunning;
-//         const button = document.getElementById('toggleKeylogger');
-//         button.textContent = isRunning ? 'Stop' : 'Start';
-//         button.classList.toggle('stop', isRunning);
-//         const recordingIndicator = document.querySelector('.recording-indicator');
-//         recordingIndicator.style.display = isRunning ? 'flex' : 'none';
-//         if (isRunning) {
-//             startTimer();
-//         } else {
-//             stopTimer();
-//             window.location.reload();
-//         }
-//     } catch (error) {
-//         console.error('Error:', error);
-//         alert('Failed to toggle keylogger');
-//     }
-// }
-
-// function startTimer() {
-//     const timerElement = document.getElementById('timer');
-//     timerElement.textContent = '00:00';
-//     timerElement.style.display = 'inline';
-//     seconds = 0;
-//     timerInterval = setInterval(() => {
-//         seconds++;
-//         const minutes = Math.floor(seconds / 60);
-//         const remainingSeconds = seconds % 60;
-//         timerElement.textContent = `${pad(minutes)}:${pad(remainingSeconds)}`;
-//     }, 1000);
-// }
-
-// function stopTimer() {
-//     clearInterval(timerInterval);
-//     const timerElement = document.getElementById('timer');
-//     timerElement.style.display = 'none';
-// }
-
-// function pad(number) {
-//     return number < 10 ? '0' + number : number;
-// }
-
-
 let gridApi;
 
 async function fetchData() {
@@ -57,14 +8,30 @@ async function fetchData() {
         const users = [...new Set(data.map(entry => entry.user))];
 
         const userSelect = document.querySelector('#userSelect');
-        userSelect.innerHTML = '<option value="">Select User</option>' + 
+        userSelect.innerHTML = '<option value="">Select User</option>' +
             users.map(user => `<option value="${user}">${user}</option>`).join('');
 
-        function updateGrid(selectedUser) {
-            document.querySelector('#user').innerHTML = selectedUser + " All data:" || 'All Users';
-            const filteredData = selectedUser ? 
-                data.filter(entry => entry.user === selectedUser) : data;
+        function parseCustomTimestamp(timestamp) {
+            const parts = timestamp.split(' '); // מפריד תאריך ושעה
+            const dateParts = parts[0].split('/'); // מפריד יום/חודש/שנה
+            const timeParts = parts[1].split(':'); // מפריד שעה/דקות
 
+            const day = parseInt(dateParts[0], 10);
+            const month = parseInt(dateParts[1], 10) - 1; // חודשים ב-JavaScript הם 0-11
+            const year = 2000 + parseInt(dateParts[2], 10); // מוסיפים 2000 לשנה כדי לקבל שנה מלאה
+
+            const hours = parseInt(timeParts[0], 10);
+            const minutes = parseInt(timeParts[1], 10);
+
+            return new Date(year, month, day, hours, minutes).getTime(); // מחזיר timestamp תקני
+        }
+
+        function updateGrid(selectedUser) {
+            document.querySelector('#user').innerHTML = selectedUser ? `${selectedUser}'s all data:` : 'All Users data:';
+        
+            const filteredData = selectedUser ?
+                data.filter(entry => entry.user === selectedUser) : data;
+        
             const rowData = filteredData.flatMap(entry =>
                 Object.entries(entry.timestamps).map(([timestamp, value]) => ({
                     window: entry.window,
@@ -72,12 +39,34 @@ async function fetchData() {
                     logs: xorDecrypt(value)
                 }))
             );
-
+        
             if (gridApi) {
                 gridApi.setGridOption("rowData", rowData);
             }
+        
+            // עדכון מספר ההקלדות
+            document.querySelector('#keystrokeCount').textContent = rowData.length;
+        
+            // עדכון מספר המשתמשים הפעילים (מספר המשתמשים הכולל)
+            const activeUsersCount = users.length;
+            document.querySelector('#activeUsers').textContent = activeUsersCount;
+        
+            // חישוב זמן הסשן
+            if (rowData.length > 0) {
+                const sessionStartTime = parseCustomTimestamp(rowData[0].timestamp);
+                const sessionEndTime = Math.max(...rowData.map(entry => parseCustomTimestamp(entry.timestamp)));
+        
+                if (!isNaN(sessionStartTime) && !isNaN(sessionEndTime)) {
+                    const sessionDuration = Math.floor((sessionEndTime - sessionStartTime) / 60000);
+                    document.querySelector('#sessionTime').textContent = `${sessionDuration}m`;
+                } else {
+                    document.querySelector('#sessionTime').textContent = `0m`;
+                }
+            } else {
+                document.querySelector('#sessionTime').textContent = `0m`;
+            }
         }
-
+        
         const gridOptions = {
             columnDefs: [
                 { headerName: "ID", valueGetter: (params) => params.node.rowIndex + 1, flex: 1 },
@@ -111,19 +100,23 @@ async function fetchData() {
     }
 }
 
-
 function xorDecrypt(hexText, key = "thisIsMyXorKey") {
-    const text = hexToString(hexText);
+    const text = hexToUtf8(hexText);
     const keyCycle = key.repeat(Math.ceil(text.length / key.length)).slice(0, text.length);
     return text.split('').map((char, i) =>
         String.fromCharCode(char.charCodeAt(0) ^ keyCycle.charCodeAt(i))
     ).join('');
 }
 
-function hexToString(hex) {
-    return hex.match(/.{1,2}/g).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
+function hexToUtf8(hex) {
+    const bytes = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+    return new TextDecoder("utf-8").decode(bytes);
 }
 
 window.addEventListener('load', function () {
     fetchData();
 });
+
+function reload(){
+    window.location.reload();
+}

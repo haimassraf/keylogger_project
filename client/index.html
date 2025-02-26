@@ -8,29 +8,46 @@
     <link href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/styles/ag-grid.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/styles/ag-theme-alpine.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <header>
-        <div class="recording-indicator">
-            <div class="dot"><img src="sorce/svg/recording animation.svg" alt=""></div>
-            <span>Recording...</span>
-            <span id="timer">00:00</span>
-        </div>
+        <h1 class="title">keylogger</h1>
+        <p class="subtitle">ADVANCED KEYSTROKE MONITORING SYSTEM</p>
     </header>
     <main>
-        <div class="container">
-            <h1 class="title">keylogger</h1>
+        <div class="controls">
             <div class="users">
-                <h3>Select a user to view the data.<i class="fa-solid fa-user" style="color: #00ff00;"></i></h3>
+                <h2 id="user"></h2>
                 <select id="userSelect">
                     <option value="">Select User</option>
                 </select>
             </div>
-            <h2 id="user">All data:</h2>
-            <!-- <button id="toggleKeylogger" onclick="toggleKeylogger()">Start</button> -->
+            <div class="reload">
+                <button onclick="reload()">Reload <i class="fa-solid fa-rotate"></i></button>
+            </div>
+        </div>
+        <div class="container">
             <div id="myGrid" class="ag-theme-alpine"></div>
+        </div>
+        <div class="stats-container">
+            <div class="stat-card">
+                <i class="fas fa-keyboard"></i>
+                <div class="stat-value" id="keystrokeCount">0</div>
+                <div class="stat-label">Keystrokes</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-user-secret"></i>
+                <div class="stat-value" id="activeUsers">0</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <div class="stat-value" id="sessionTime">0m</div>
+                <div class="stat-label">Session Time</div>
+            </div>
         </div>
     </main>
     <footer>

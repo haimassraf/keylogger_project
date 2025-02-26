@@ -9,8 +9,6 @@
       <change beforePath="$PROJECT_DIR$/client/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/key_logger/keylogger.py" beforeDir="false" afterPath="$PROJECT_DIR$/key_logger/keylogger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/controller.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
