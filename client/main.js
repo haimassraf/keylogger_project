@@ -1,6 +1,6 @@
 // Simple date display for footer
 document.getElementById('current-date').textContent = new Date().toISOString().split('T')[0];
-        
+
 // Matrix effect for background
 const canvas = document.createElement('canvas');
 canvas.width = window.innerWidth;
@@ -19,18 +19,18 @@ for (let i = 0; i < columns; i++) {
 function drawMatrix() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     ctx.fillStyle = '#0f0';
     ctx.font = '15px monospace';
-    
+
     for (let i = 0; i < drops.length; i++) {
         const text = characters.charAt(Math.floor(Math.random() * characters.length));
         ctx.fillText(text, i * 20, drops[i] * 20);
-        
+
         if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
             drops[i] = 0;
         }
-        
+
         drops[i]++;
     }
 }
@@ -39,9 +39,50 @@ setInterval(drawMatrix, 50);
 
 // Placeholder for export function 
 function exportData() {
-    alert('Data export initiated. Please wait...');
-    // This would connect to your actual export functionality
+    if (!gridApi) {
+        alert("No data to export.");
+        return;
+    }
+
+    const rowData = [];
+    gridApi.forEachNode((node) => rowData.push(node.data));
+
+    if (rowData.length === 0) {
+        alert("No data available for export.");
+        return;
+    }
+
+    // קבלת שם המשתמש שנבחר מהתפריט
+    const userSelect = document.querySelector('#userSelect');
+    const selectedUser = userSelect.value || "All Users";
+
+    // כותרת עליונה עם שם המשתמש
+    const title = `Data Export for: ${selectedUser}\n`;
+
+    // כותרות העמודות
+    const headers = ["ID", "Window", "Timestamp", "Logs"];
+
+    // המרת הנתונים לפורמט CSV
+    const csvContent = [
+        title, // שורה ראשונה - כותרת עם שם המשתמש
+        headers.join(","), // שורה שנייה - כותרות העמודות
+        ...rowData.map((row, index) =>
+            [index + 1, row.window, row.timestamp, `"${row.logs.replace(/"/g, '""')}"`].join(",") // המרת כל שורה למערך
+        )
+    ].join("\n");
+
+    // יצירת קובץ והורדתו
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `exported_data_${selectedUser.replace(/\s+/g, "_")}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }
+
 
 let gridApi;
 
@@ -169,6 +210,6 @@ function reload() {
     window.location.reload();
 }
 
-function showData(vlaue){
+function showData(vlaue) {
     document.getElementById('chooseLog').innerText = vlaue;
 }

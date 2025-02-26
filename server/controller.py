@@ -4,13 +4,17 @@ from flask import request, jsonify
 import signal
 from pymongo import MongoClient
 
-client = MongoClient("mongodb+srv://haimassraf:Aa123456@cluster0.s8vwr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+client = MongoClient(
+    "mongodb+srv://haimassraf:Aa123456@cluster0.s8vwr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 db = client["key_loger_project"]
 data_collection = db["data"]
+managers_collection = db["managers"]
+
 
 def get_data():
     users = list(data_collection.find({}, {"_id": 0}))
     return jsonify(users), 200
+
 
 def add_data():
     try:
@@ -39,18 +43,31 @@ def add_data():
         return jsonify({"error": str(err)}), 500
 
 
-# process = None
-# def start_keylogger():
-#     global process
-#     if process is None:
-#         process = subprocess.Popen(['python', '../key_logger/keylogger.py'])
-#         return jsonify({"status": "Keylogger started"}), 200
-#     return jsonify({"status": "Keylogger already running"}), 400
-#
-# def stop_keylogger():
-#     global process
-#     if process is not None:
-#         os.kill(process.pid, signal.SIGTERM)
-#         process = None
-#         return jsonify({"status": "Keylogger stopped"}), 200
-#     return jsonify({"status": "Keylogger is not running"}), 400
+def get_managers():
+    managers = list(managers_collection.find({}, {"_id": 0}))
+    return jsonify(managers), 200
+
+
+def add_manager():
+    try:
+        new_manager = request.json
+        if managers_collection.find_one({"user_name": new_manager['user_name']}):
+            return jsonify({"error": "Manager already exists!"}), 400
+
+        if managers_collection.find_one({"email": new_manager['email']}):
+            return jsonify({"error": "Email already exists!"}), 400
+
+        managers_collection.insert_one({
+            "user_name": new_manager['user_name'],
+            "password": new_manager['password'],
+            "email": new_manager['email']
+        })
+
+        return jsonify({"message": "Manager added successfully!", "new_manager": {
+            "user_name": new_manager['user_name'],
+            "password": new_manager['password'],
+            "email": new_manager['email']
+        }}), 201
+
+    except Exception as err:
+        return jsonify({"error": str(err)}), 500

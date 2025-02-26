@@ -30,21 +30,20 @@ class KeyLoggerService:
             "u": "ו", "v": "ה", "w": "'", "x": "ס", "y": "ט", "z": "ז", ";": "ף", "'": ",", ",": "ת", ".": "ץ"
         }
 
-        he_to_english = {v: k for k, v in en_to_hebrew.items()}  # יוצרים טבלת המרה הפוכה
+        he_to_english = {v: k for k, v in en_to_hebrew.items()}
 
         if lang == 1037:  # עברית
             return en_to_hebrew.get(key_name, key_name)
         elif lang == 1033:  # אנגלית
             return he_to_english.get(key_name, key_name)
-        return key_name  # אם השפה לא מזוהה, מחזירים את המקש כמו שהוא
+        return key_name
 
     def _format_key(self, key_name):
-        """ מוסיף פורמט למקשים מיוחדים """
         if key_name == "enter":
             return " \n "
         elif key_name == "space":
             return " "
-        elif len(key_name) > 1:  # אם זה לא תו בודד (למשל "shift", "ctrl")
+        elif len(key_name) > 1:
             return f" [{key_name}] "
         return key_name
 
