@@ -57,7 +57,8 @@ def add_manager():
         managers_collection.insert_one({
             "user_name": new_manager['user_name'],
             "password": new_manager['password'],
-            "email": new_manager['email']
+            "email": new_manager['email'],
+            "is_admin": False
         })
 
         return jsonify({"message": "Manager added successfully!", "new_manager": {

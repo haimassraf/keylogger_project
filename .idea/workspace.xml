@@ -7,10 +7,10 @@
     <list default="true" id="baa75565-bb4d-4426-b607-b8a1c0b9c99d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/login.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/router.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/router.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -59,7 +59,8 @@ header {
 /* Manager Popup Styles */
 .MnagerDetails {
     position: relative;
-    display: inline-block;
+    display: flex;
+    gap: 10px;
 }
 
 #managerName {
@@ -89,6 +90,10 @@ header {
     background-color: var(--primary-color);
     color: var(--bg-color);
     box-shadow: var(--btn-glow);
+}
+
+#addUserBtn{
+    display: none;
 }
 
 .popup {
@@ -651,4 +656,104 @@ footer {
     .footer-text {
         font-size: 0.7rem;
     }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: var(--bg-light);
+    padding: 20px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--primary-dark);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--primary-dark);
+    border-radius: 4px;
+    color: var(--text-color);
+    font-family: var(--terminal-font);
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.submit-btn {
+    width: 100%;
+    background-color: var(--primary-dark);
+    border: 1px solid var(--primary-color);
+    color: white;
+    padding: 10px;
+    font-family: var(--terminal-font);
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
+
+.submit-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: var(--btn-glow);
 }

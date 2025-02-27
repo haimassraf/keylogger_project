@@ -37,7 +37,7 @@ function drawMatrix() {
 
 setInterval(drawMatrix, 50);
 
-// Manager popup functionality
+// Main functionality
 document.addEventListener('DOMContentLoaded', function () {
     const managerBtn = document.getElementById('managerName');
     const popup = document.querySelector('.popup');
@@ -46,8 +46,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set the popup username to match the manager name
     function updateUsername() {
         const manager = localStorage.getItem('loggedInUser') || 'User';
-        // if (managerBtn) managerBtn.textContent = manager;
+        const isAdmin = localStorage.getItem('isAdmin');
         if (popupUsername) popupUsername.textContent = manager;
+        if (managerBtn) managerBtn.textContent = manager;
+        if(isAdmin == 'true'){
+            document.getElementById('addUserBtn').style.display = 'block';
+        }
     }
 
     // Initial update
@@ -73,8 +77,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function () {
             localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('isAdmin');
+            localStorage.removeItem('email');
             alert('Logged out successfully!');
-            window.location.href = 'login.html'; // Redirect to login page or reload
+            window.location.href = 'login.html';
         });
     }
 
@@ -82,15 +88,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const editProfileBtn = document.getElementById('editProfileBtn');
     if (editProfileBtn) {
         editProfileBtn.addEventListener('click', function () {
+            const modal = document.getElementById('editProfileModal');
             const currentUsername = localStorage.getItem('loggedInUser') || 'User';
-            const newUsername = prompt('Edit your username:', currentUsername);
-
-            if (newUsername && newUsername.trim() !== '') {
-                localStorage.setItem('loggedInUser', newUsername.trim());
-                updateUsername();
-                alert('Profile updated successfully!');
-                popup.classList.remove('active');
-            }
+            const currentEmail = localStorage.getItem('email') || ' ';
+            document.getElementById('editEmail').value = currentEmail;
+            document.getElementById('editUsername').value = currentUsername;
+            modal.style.display = 'flex';
+            popup.classList.remove('active');
         });
     }
 
@@ -98,38 +102,138 @@ document.addEventListener('DOMContentLoaded', function () {
     const addUserBtn = document.getElementById('addUserBtn');
     if (addUserBtn) {
         addUserBtn.addEventListener('click', function () {
-            const newUser = prompt('Enter new user name:');
+            const modal = document.getElementById('addUserModal');
+            modal.style.display = 'flex';
+            popup.classList.remove('active');
+        });
+    }
 
-            if (newUser && newUser.trim() !== '') {
-                // Get existing users from select element
-                const userSelect = document.getElementById('userSelect');
-
-                // Create new option
-                const option = document.createElement('option');
-                option.value = newUser.trim();
-                option.textContent = newUser.trim();
-
-                // Add to select
-                if (userSelect) {
-                    userSelect.appendChild(option);
-                    alert(`New user "${newUser.trim()}" added successfully!`);
-
-                    // Update users count
-                    const activeUsersElement = document.getElementById('activeUsers');
-                    if (activeUsersElement) {
-                        const currentCount = parseInt(activeUsersElement.textContent) || 0;
-                        activeUsersElement.textContent = currentCount + 1;
-                    }
-                } else {
-                    alert('Could not add user. User selection element not found.');
+    // Handle edit profile form submission
+    const editProfileForm = document.getElementById('editProfileForm');
+    if (editProfileForm) {
+        editProfileForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const currentUsername = localStorage.getItem('loggedInUser') || 'User';
+            const formData = new FormData(editProfileForm);
+            const updateData = {};
+            
+            formData.forEach((value, key) => {
+                if (value && (key !== 'user_name' || value !== currentUsername)) {
+                    updateData[key] = value.trim();
                 }
+            });
 
-                popup.classList.remove('active');
+            if (Object.keys(updateData).length === 0) {
+                alert('No changes to update');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/update_manager/${currentUsername}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (updateData.user_name){
+                        localStorage.setItem('loggedInUser', updateData.user_name);
+                    }
+                    if ( updateData.email){
+                        localStorage.setItem('email', updateData.email);
+                    }
+                    updateUsername();
+                    alert('Profile updated successfully!');
+                    closeModal('editProfileModal');
+                } else {
+                    alert(result.error || 'Failed to update profile');
+                }
+            } catch (error) {
+                console.error('Error updating manager:', error);
+                alert('Error updating profile. Please try again.');
+            }
+        });
+    }
+
+    // Handle add user form submission
+    const addUserForm = document.getElementById('addUserForm');
+    if (addUserForm) {
+        addUserForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const formData = new FormData(addUserForm);
+            const newManager = {};
+
+            formData.forEach((value, key) => {
+                newManager[key] = value.trim();
+            });
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/add_manager', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newManager)
+                });
+
+                const result = await response.json();
+
+                if (response.status === 201) {
+                    const userSelect = document.getElementById('userSelect');
+                    if (userSelect) {
+                        const option = document.createElement('option');
+                        option.value = newManager.user_name;
+                        option.textContent = newManager.user_name;
+                        userSelect.appendChild(option);
+
+                        const activeUsersElement = document.getElementById('activeUsers');
+                        if (activeUsersElement) {
+                            const currentCount = parseInt(activeUsersElement.textContent) || 0;
+                            activeUsersElement.textContent = currentCount + 1;
+                        }
+                    }
+
+                    alert(`Manager "${newManager.user_name}" added successfully!`);
+                    closeModal('addUserModal');
+                } else {
+                    alert(result.error || 'Failed to add manager');
+                }
+            } catch (error) {
+                console.error('Error adding manager:', error);
+                alert('Error adding manager. Please try again.');
             }
         });
     }
 });
 
+// Function to close modals
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none';
+    if (modalId === 'editProfileModal') {
+        document.getElementById('editProfileForm').reset();
+        document.getElementById('editUsername').value = localStorage.getItem('loggedInUser') || 'User';
+    } else if (modalId === 'addUserModal') {
+        document.getElementById('addUserForm').reset();
+    }
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function (event) {
+    const editModal = document.getElementById('editProfileModal');
+    const addModal = document.getElementById('addUserModal');
+    if (event.target === editModal) {
+        closeModal('editProfileModal');
+    } else if (event.target === addModal) {
+        closeModal('addUserModal');
+    }
+});
+
+// Export data function
 function exportData() {
     if (!gridApi) {
         alert("No data to export.");
@@ -144,26 +248,19 @@ function exportData() {
         return;
     }
 
-    // קבלת שם המשתמש שנבחר מהתפריט
     const userSelect = document.querySelector('#userSelect');
     const selectedUser = userSelect.value || "All Users";
-
-    // כותרת עליונה עם שם המשתמש
     const title = `Data Export for: ${selectedUser}\n`;
-
-    // כותרות העמודות
     const headers = ["ID", "Window", "Timestamp", "Logs"];
 
-    // המרת הנתונים לפורמט CSV
     const csvContent = [
-        title, // שורה ראשונה - כותרת עם שם המשתמש
-        headers.join(","), // שורה שנייה - כותרות העמודות
+        title,
+        headers.join(","),
         ...rowData.map((row, index) =>
-            [index + 1, row.window, row.timestamp, `"${row.logs.replace(/"/g, '""')}"`].join(",") // המרת כל שורה למערך
+            [index + 1, row.window, row.timestamp, `"${row.logs.replace(/"/g, '""')}"`].join(",")
         )
     ].join("\n");
 
-    // יצירת קובץ והורדתו
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -174,7 +271,6 @@ function exportData() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 }
-
 
 let gridApi;
 

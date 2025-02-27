@@ -79,6 +79,8 @@ document.querySelector('.login-form').addEventListener('submit', async function(
         if (manager) {
             alert("Login successful!");
             localStorage.setItem('loggedInUser', username); // שמירת שם המשתמש
+            localStorage.setItem('isAdmin', manager.is_admin); // שמירת האם המשתמש הוא מנהל
+            localStorage.setItem('email', manager.email); // שמירת האימייל של המנהל
             window.location.href = "index.html";
         } else {
             alert("Invalid credentials, please try again.");
@@ -88,8 +90,6 @@ document.querySelector('.login-form').addEventListener('submit', async function(
         alert("An error occurred. Please try again later.");
     }
 });
-
-
 
 // Resize canvas when window size changes
 window.addEventListener('resize', function() {
