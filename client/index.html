@@ -15,9 +15,38 @@
 
 <body>
     <div class="matrix-bg" id="matrixCanvas"></div>
-    
+
     <header>
         <div class="logo-container">
+            <div class="MnagerDetails">
+                <button id="managerName">
+                    <div class="popup-header">
+                        <div class="popup-avatar">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="popup-user-info">
+                            <div class="popup-username" id="popupUsername">Admin</div>
+                            <!-- <div class="popup-role">System Manager</div> -->
+                        </div>
+                    </div>
+                </button>
+                <div class="popup">
+                    <div class="popup-actions">
+                        <button class="popup-action-btn" id="editProfileBtn">
+                            <i class="fas fa-user-edit"></i>
+                            Edit Profile
+                        </button>
+                        <button class="popup-action-btn" id="addUserBtn">
+                            <i class="fas fa-user-plus"></i>
+                            Add New User
+                        </button>
+                        <button class="popup-action-btn logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Log Out
+                        </button>
+                    </div>
+                </div>
+            </div>
             <i class="fas fa-eye surveillance-icon"></i>
         </div>
         <div class="title-container">
@@ -29,7 +58,7 @@
             <span class="status-text">ACTIVE</span>
         </div>
     </header>
-    
+
     <main>
         <div class="controls">
             <div class="users-section">
@@ -39,12 +68,12 @@
                     <option value="">Select User</option>
                 </select>
             </div>
-            
+
             <div class="log-section">
                 <h3 class="section-title"><i class="fas fa-stream"></i> LIVE FEED</h3>
                 <textarea id="chooseLog" readonly placeholder="Waiting for keystrokes..."></textarea>
             </div>
-            
+
             <div class="action-section">
                 <button class="reload-btn" onclick="reload()">
                     <span class="btn-text">REFRESH DATA</span>
@@ -56,27 +85,27 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="data-section">
             <h3 class="section-title"><i class="fas fa-table"></i> KEYSTROKE DATABASE</h3>
             <div class="container">
                 <div id="myGrid" class="ag-theme-alpine"></div>
             </div>
         </div>
-        
+
         <div class="stats-container">
             <div class="stat-card">
                 <i class="fas fa-keyboard"></i>
                 <div class="stat-value" id="keystrokeCount">0</div>
                 <div class="stat-label">TOTAL KEYSTROKES</div>
             </div>
-            
+
             <div class="stat-card">
                 <i class="fas fa-user-secret"></i>
                 <div class="stat-value" id="activeUsers">0</div>
                 <div class="stat-label">ACTIVE USERS</div>
             </div>
-            
+
             <div class="stat-card">
                 <i class="fas fa-clock"></i>
                 <div class="stat-value" id="sessionTime">0m</div>
@@ -84,16 +113,17 @@
             </div>
         </div>
     </main>
-    
+
     <footer>
         <div class="footer-content">
             <div class="security-badge">
                 <i class="fas fa-shield-alt"></i>
             </div>
-            <p class="footer-text">SYSTEM MONITORED | UNAUTHORIZED ACCESS PROHIBITED | Haim Assraf |<span id="current-date"></span></p>
+            <p class="footer-text">SYSTEM MONITORED | UNAUTHORIZED ACCESS PROHIBITED | Haim Assraf |<span
+                    id="current-date"></span></p>
         </div>
     </footer>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.1.0/dist/ag-grid-community.min.js"></script>
     <script src="main.js"></script>
 </body>

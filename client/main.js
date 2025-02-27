@@ -37,7 +37,99 @@ function drawMatrix() {
 
 setInterval(drawMatrix, 50);
 
-// Placeholder for export function 
+// Manager popup functionality
+document.addEventListener('DOMContentLoaded', function () {
+    const managerBtn = document.getElementById('managerName');
+    const popup = document.querySelector('.popup');
+    const popupUsername = document.getElementById('popupUsername');
+
+    // Set the popup username to match the manager name
+    function updateUsername() {
+        const manager = localStorage.getItem('loggedInUser') || 'User';
+        // if (managerBtn) managerBtn.textContent = manager;
+        if (popupUsername) popupUsername.textContent = manager;
+    }
+
+    // Initial update
+    updateUsername();
+
+    // Toggle popup when manager button is clicked
+    if (managerBtn) {
+        managerBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            popup.classList.toggle('active');
+        });
+    }
+
+    // Close popup when clicking outside
+    document.addEventListener('click', function (e) {
+        if (popup && popup.classList.contains('active') && !popup.contains(e.target)) {
+            popup.classList.remove('active');
+        }
+    });
+
+    // Handle logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem('loggedInUser');
+            alert('Logged out successfully!');
+            window.location.href = 'login.html'; // Redirect to login page or reload
+        });
+    }
+
+    // Handle edit profile button
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', function () {
+            const currentUsername = localStorage.getItem('loggedInUser') || 'User';
+            const newUsername = prompt('Edit your username:', currentUsername);
+
+            if (newUsername && newUsername.trim() !== '') {
+                localStorage.setItem('loggedInUser', newUsername.trim());
+                updateUsername();
+                alert('Profile updated successfully!');
+                popup.classList.remove('active');
+            }
+        });
+    }
+
+    // Handle add user button
+    const addUserBtn = document.getElementById('addUserBtn');
+    if (addUserBtn) {
+        addUserBtn.addEventListener('click', function () {
+            const newUser = prompt('Enter new user name:');
+
+            if (newUser && newUser.trim() !== '') {
+                // Get existing users from select element
+                const userSelect = document.getElementById('userSelect');
+
+                // Create new option
+                const option = document.createElement('option');
+                option.value = newUser.trim();
+                option.textContent = newUser.trim();
+
+                // Add to select
+                if (userSelect) {
+                    userSelect.appendChild(option);
+                    alert(`New user "${newUser.trim()}" added successfully!`);
+
+                    // Update users count
+                    const activeUsersElement = document.getElementById('activeUsers');
+                    if (activeUsersElement) {
+                        const currentCount = parseInt(activeUsersElement.textContent) || 0;
+                        activeUsersElement.textContent = currentCount + 1;
+                    }
+                } else {
+                    alert('Could not add user. User selection element not found.');
+                }
+
+                popup.classList.remove('active');
+            }
+        });
+    }
+});
+
 function exportData() {
     if (!gridApi) {
         alert("No data to export.");
@@ -158,7 +250,7 @@ async function fetchData() {
                 { headerName: "ID", valueGetter: (params) => params.node.rowIndex + 1, flex: 1 },
                 { headerName: 'Window', field: 'window', filter: 'agTextColumnFilter', flex: 2 },
                 { headerName: 'Timestamp', field: 'timestamp', filter: 'agTextColumnFilter', flex: 2 },
-                { headerName: 'Logs', field: 'logs', filter: 'agTextColumnFilter', flex: 8 }
+                { headerName: 'Logs', field: 'logs', filter: 'agTextColumnFilter', flex: 9 }
             ],
             defaultColDef: {
                 sortable: true,

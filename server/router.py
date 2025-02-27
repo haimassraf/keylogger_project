@@ -18,3 +18,7 @@ def get_manager():
 @router.route('/add_manager', methods=['POST'])
 def add_manager():
     return controller.add_manager()
+
+@router.route('/update_manager/<string:user_name>', methods=['PUT'])
+def update_manager_route(user_name):
+    return controller.update_manager(user_name)

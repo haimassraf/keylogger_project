@@ -1,7 +1,4 @@
-import os
-import subprocess
 from flask import request, jsonify
-import signal
 from pymongo import MongoClient
 
 client = MongoClient(
@@ -68,6 +65,49 @@ def add_manager():
             "password": new_manager['password'],
             "email": new_manager['email']
         }}), 201
+
+    except Exception as err:
+        return jsonify({"error": str(err)}), 500
+
+def update_manager(user_name):
+    try:
+        data = request.json
+        manager = managers_collection.find_one({"user_name": user_name})
+
+        if not manager:
+            return jsonify({"error": "Manager not found!"}), 404
+
+        update_fields = {}
+
+        # בדיקה אם יש עדכון לשם המשתמש
+        if "user_name" in data and data["user_name"] != user_name:
+            existing_manager = managers_collection.find_one({"user_name": data["user_name"]})
+            if existing_manager:
+                return jsonify({"error": "Username already exists!"}), 400
+            update_fields["user_name"] = data["user_name"]
+
+        # בדיקה אם יש עדכון לאימייל
+        if "email" in data:
+            existing_email = managers_collection.find_one({"email": data["email"], "user_name": {"$ne": user_name}})
+            if existing_email:
+                return jsonify({"error": "Email already exists!"}), 400
+            update_fields["email"] = data["email"]
+
+        # בדיקה אם יש עדכון לסיסמה
+        if "password" in data:
+            update_fields["password"] = data["password"]
+
+        if not update_fields:
+            return jsonify({"message": "No fields to update"}), 400
+
+        # עדכון הנתונים במסד הנתונים
+        managers_collection.update_one({"user_name": user_name}, {"$set": update_fields})
+
+        # אם שם המשתמש השתנה, עדכן את המשתמש במסד הנתונים מחדש
+        updated_user_name = update_fields.get("user_name", user_name)
+        updated_manager = managers_collection.find_one({"user_name": updated_user_name}, {"_id": 0})
+
+        return jsonify({"message": "Manager updated successfully!", "updated_manager": updated_manager}), 200
 
     except Exception as err:
         return jsonify({"error": str(err)}), 500

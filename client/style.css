@@ -56,10 +56,158 @@ header {
     z-index: 10;
 }
 
+/* Manager Popup Styles */
+.MnagerDetails {
+    position: relative;
+    display: inline-block;
+}
+
+#managerName {
+    background-color: var(--primary-dark);
+    color: white;
+    border: 1px solid var(--primary-color);
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-family: var(--terminal-font);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+#managerName::after {
+    content: '\f0d7';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 0.8rem;
+}
+
+#managerName:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: var(--btn-glow);
+}
+
+.popup {
+    position: absolute;
+    display: none;
+    width: 250px;
+    top: 110%;
+    left: 0;
+    background-color: var(--bg-light);
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    padding: 15px;
+    animation: fadeIn 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.popup.active {
+    display: block;
+}
+
+.popup-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--primary-dark);
+    margin-bottom: 12px;
+}
+
+.popup-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--primary-color);
+}
+
+.popup-avatar i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.popup-user-info {
+    flex: 1;
+}
+
+.popup-username {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.popup-role {
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.popup-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.popup-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: var(--primary-dark);
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    color: white;
+    font-family: var(--terminal-font);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
+
+.popup-action-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    transform: translateX(5px);
+}
+
+.logout-btn {
+    margin-top: 5px;
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.logout-btn:hover {
+    background-color: var(--accent-color);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .logo-container {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
 }
 
 .surveillance-icon {
