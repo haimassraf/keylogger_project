@@ -1,8 +1,7 @@
 from flask import request, jsonify
 from pymongo import MongoClient
 
-client = MongoClient(
-    "mongodb+srv://haimassraf:Aa123456@cluster0.s8vwr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+client = MongoClient();
 db = client["key_loger_project"]
 data_collection = db["data"]
 managers_collection = db["managers"]
